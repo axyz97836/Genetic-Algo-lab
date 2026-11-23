@@ -1,0 +1,109 @@
+/**
+ * css/tokens.css - Design System Tokens for GA Lab (Depth-Layered 3D Redesign).
+ * Strict three-color system:
+ * --graphite: #101417 (ground)
+ * --stone:    #D8D4C8 (structure, text)
+ * --lime:     #C6F135 (signal: best individual, mutation, cut-line, focus, primary action)
+ *
+ * No fourth hue. Depth from geometry, parallax, and structural layering only.
+ * Zero drop shadows, glows, or gradients.
+ */
+
+:root {
+  /* Exactly Three Base Colors */
+  --graphite: #101417;
+  --stone:    #D8D4C8;
+  --lime:     #C6F135;
+
+  /* Strict Three-Color Variations & Ratios */
+  --panel-fill:         color-mix(in srgb, var(--stone) 5%, transparent);
+  --panel-border:       color-mix(in srgb, var(--stone) 18%, transparent);
+  --panel-border-hover: color-mix(in srgb, var(--lime) 55%, transparent);
+  --text-muted:         color-mix(in srgb, var(--stone) 62%, transparent);
+  --text-primary:       var(--stone);
+  --text-on-lime:       var(--graphite);
+
+  /* Surface Mapping to 3-Color Hierarchy */
+  --color-bg-base:        var(--graphite);
+  --color-surface-base:   var(--graphite);
+  --color-surface-raised: color-mix(in srgb, var(--stone) 6%, var(--graphite));
+  --color-surface-overlay: color-mix(in srgb, var(--stone) 12%, var(--graphite));
+  --color-surface-inset:  color-mix(in srgb, var(--stone) 3%, var(--graphite));
+
+  /* Translucent Borders */
+  --color-border-subtle: color-mix(in srgb, var(--stone) 12%, transparent);
+  --color-border-medium: color-mix(in srgb, var(--stone) 18%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--stone) 35%, transparent);
+
+  /* Text & Content Roles */
+  --color-text-primary:   var(--stone);
+  --color-text-secondary: color-mix(in srgb, var(--stone) 80%, transparent);
+  --color-text-muted:     color-mix(in srgb, var(--stone) 62%, transparent);
+
+  /* Algorithmic & State Semantics (derived from 3-color palette) */
+  --color-signal:         var(--lime);
+  --color-chrom-x1:       var(--stone);
+  --color-chrom-x2:       color-mix(in srgb, var(--stone) 70%, transparent);
+  --color-success:        var(--lime);
+  --color-warning:        var(--stone);
+  --color-danger:         color-mix(in srgb, var(--stone) 85%, transparent);
+
+  /* Flat Styling: ZERO drop shadows, ZERO glows, ZERO gradients */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --glow-x1: none;
+  --glow-x2: none;
+  --glow-accent: none;
+  --glow-success: none;
+  --glow-danger: none;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', "SF Mono", Monaco, Consolas, monospace;
+
+  /* Font Sizes */
+  --font-size-2xs: 0.6875rem; /* 11px */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.8125rem;  /* 13px */
+  --font-size-base: 0.875rem; /* 14px */
+  --font-size-md: 1.0rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.375rem;   /* 22px */
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing Scale (4px base) */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1.0rem;   /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2.0rem;   /* 32px */
+
+  /* Radii: 8px panels, 6px controls */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px; /* controls */
+  --radius-lg: 8px; /* panels */
+
+  /* 3D Depth Tiers */
+  --depth-ground:      0px;
+  --depth-interactive: 24px;
+  --depth-floating:    48px;
+
+  /* Dynamic Tilt Variables (managed by TiltController) */
+  --tilt-rx: 0deg;
+  --tilt-ry: 0deg;
+
+  /* Motion Timing */
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-panel: 300ms;
+  --ease-panel: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GA Lab — In-Browser Test Suite & Verification</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>
+    body {
+      background-color: var(--color-bg-base);
+      color: var(--color-text-primary);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .test-header {
+      background: var(--color-surface-raised);
+      border-bottom: 1px solid var(--color-border-subtle);
+      padding: var(--space-4) var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+    }
+
+    .test-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .test-brand h1 {
+      margin: 0;
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-bold);
+      letter-spacing: -0.01em;
+    }
+
+    .test-meta-badge {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-2xs);
+      background: var(--color-surface-inset);
+      border: 1px solid var(--color-border-subtle);
+      padding: 2px 8px;
+      border-radius: var(--radius-xs);
+      color: var(--color-text-secondary);
+    }
+
+    .test-stats-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+    }
+
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-inset);
+      border: 1px solid var(--color-border-subtle);
+    }
+
+    .stat-pill.passed {
+      color: var(--color-success);
+      border-color: rgba(52, 211, 153, 0.4);
+      background: rgba(52, 211, 153, 0.1);
+    }
+
+    .stat-pill.failed {
+      color: var(--color-danger);
+      border-color: rgba(248, 113, 113, 0.4);
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    .test-main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-6);
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    .test-suite-card {
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .suite-card-header {
+      background: var(--color-surface-overlay);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .suite-card-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .suite-test-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .test-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-2) var(--space-4);
+      border-bottom: 1px solid var(--color-border-subtle);
+      font-size: var(--font-size-xs);
+      transition: background var(--duration-fast) ease;
+    }
+
+    .test-item-row:last-child {
+      border-bottom: none;
+    }
+
+    .test-item-row:hover {
+      background: var(--color-surface-hover);
+    }
+
+    .test-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .test-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: bold;
+      padding: 1px 6px;
+      border-radius: var(--radius-xs);
+    }
+
+    .test-badge.pass {
+      background: rgba(52, 211, 153, 0.2);
+      color: var(--color-success);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+    }
+
+    .test-badge.fail {
+      background: rgba(248, 113, 113, 0.2);
+      color: var(--color-danger);
+      border: 1px solid rgba(248, 113, 113, 0.4);
+    }
+
+    .test-time {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-2xs);
+      color: var(--color-text-muted);
+    }
+
+    .audit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      text-align: left;
+    }
+
+    .audit-table th {
+      background: var(--color-surface-overlay);
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--color-border-medium);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-2xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .audit-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--color-border-subtle);
+      color: var(--color-text-primary);
+    }
+
+    .audit-table tr:hover {
+      background: var(--color-surface-hover);
+    }
+
+    @media (max-width: 900px) {
+      .test-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+      }
+      .test-stats-bar {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="test-header">
+    <div class="test-brand">
+      <span style="color: var(--color-chrom-x1); font-weight: bold; font-family: var(--font-mono); font-size: 16px;">[GA LAB]</span>
+      <h1>In-Browser Test & Preset Verification Suite</h1>
+      <span class="test-meta-badge">Phase 5 (SPEC.md §4.4, §6)</span>
+    </div>
+
+    <div class="test-stats-bar">
+      <div id="stat-passed" class="stat-pill passed">
+        <span>Passed:</span>
+        <strong id="passed-count">0</strong>
+      </div>
+      <div id="stat-failed" class="stat-pill failed" style="display: none;">
+        <span>Failed:</span>
+        <strong id="failed-count">0</strong>
+      </div>
+      <div class="stat-pill">
+        <span>Total:</span>
+        <strong id="total-count">0</strong>
+      </div>
+      <div class="stat-pill">
+        <span>Duration:</span>
+        <strong id="duration-count">0 ms</strong>
+      </div>
+      <button id="run-tests-btn" class="btn btn-primary" style="font-size: var(--font-size-xs);">
+        ▶ Run All Tests
+      </button>
+      <a href="index.html" class="btn btn-secondary" style="font-size: var(--font-size-xs); text-decoration: none;">
+        ← Back to App
+      </a>
+    </div>
+  </header>
+
+  <main class="test-main-container">
+    
+    <!-- Presets Verification Breakdown Card -->
+    <section class="test-suite-card" aria-label="Preset Reference Runs Verification">
+      <div class="suite-card-header">
+        <span class="suite-card-title">
+          <span>📚</span>
+          <span>Preset Reference Replay Audit (Walk Gen 1–3)</span>
+        </span>
+        <span id="preset-audit-summary" style="font-family: var(--font-mono); font-size: 11px; color: var(--color-success);">
+          Checking presets...
+        </span>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="audit-table" id="presets-audit-table">
+          <thead>
+            <tr>
+              <th>Preset ID</th>
+              <th>Problem</th>
+              <th>Direction</th>
+              <th>Gen 1 Cells</th>
+              <th>Gen 2 Cells</th>
+              <th>Gen 3 Cells</th>
+              <th>Total Matched / Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="presets-audit-tbody">
+            <!-- Populated by in-browser-runner.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Test Suites Container -->
+    <div id="test-suites-container" style="display: flex; flex-direction: column; gap: var(--space-4);">
+      <!-- Populated by in-browser-runner.js -->
+    </div>
+
+  </main>
+
+  <script type="module" src="tests/in-browser-runner.js"></script>
+</body>
+</html>

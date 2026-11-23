@@ -1,0 +1,12 @@
+{
+  "pop4": {
+    "avgMs": 0.917,
+    "gridSize": 16,
+    "fallbackTriggered": false
+  },
+  "pop200": {
+    "avgMs": 0.733,
+    "gridSize": 16,
+    "fallbackTriggered": false
+  }
+}

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GA Lab — Binary Genetic Algorithm Laboratory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div id="app-root">
+    <!-- 1. Top Bar -->
+    <header id="top-bar" role="banner">
+      <div class="top-bar-left">
+        <div class="brand-badge" aria-label="GA Lab Logo">
+          <div class="brand-icon">GA</div>
+          <span>GA LAB</span>
+        </div>
+        <span class="brand-tag">Schema X-Ray</span>
+      </div>
+
+      <div class="top-bar-center">
+        <label for="preset-select" class="form-label" style="margin-bottom: 0; margin-right: 6px;">Preset:</label>
+        <select id="preset-select" class="input-select" style="width: 240px;" aria-label="Select Reference Preset">
+          <!-- Populated by controls.js -->
+        </select>
+      </div>
+
+      <div class="top-bar-right">
+        <button id="clone-free-btn" class="btn btn-secondary" style="display: none;" title="Clone preset to Free Play with Mulberry32 RNG">
+          Clone to Free Play
+        </button>
+        <button id="verify-mode-btn" class="btn btn-primary" aria-pressed="false">
+          <span id="verify-status-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--color-text-muted);"></span>
+          Verify Mode: OFF
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. Control Rail (Left) -->
+    <aside id="control-rail" role="region" aria-label="Algorithm Parameters">
+      <div class="stage-panel">
+        <div class="stage-panel-header">
+          <span class="stage-panel-title">Problem & Bounds</span>
+        </div>
+        
+        <div class="form-group">
+          <label for="problem-select" class="form-label">Objective Function</label>
+          <select id="problem-select" class="input-select">
+            <!-- Populated by problems.js -->
+          </select>
+        </div>
+
+        <div id="custom-expr-wrap" class="form-group" style="display: none;">
+          <label for="custom-expr-input" class="form-label">Custom Expression f(x1, x2)</label>
+          <input type="text" id="custom-expr-input" class="input-text" value="x1^2 + x2^2" spellcheck="false" autocomplete="off">
+          <div id="custom-expr-error" class="input-error-msg"></div>
+        </div>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label for="problem-type" class="form-label">Direction</label>
+            <select id="problem-type" class="input-select">
+              <option value="min">Minimization</option>
+              <option value="max">Maximization</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="precision-select" class="form-label">Precision (n)</label>
+            <select id="precision-select" class="input-select">
+              <option value="4">4-bit (L=8)</option>
+              <option value="5">5-bit (L=10)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">x1 Bounds [min, max]</label>
+          <div class="input-row">
+            <input type="number" id="x1-min" class="input-number" value="0" step="any">
+            <input type="number" id="x1-max" class="input-number" value="15" step="any">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">x2 Bounds [min, max]</label>
+          <div class="input-row">
+            <input type="number" id="x2-min" class="input-number" value="0" step="any">
+            <input type="number" id="x2-max" class="input-number" value="15" step="any">
+          </div>
+        </div>
+
+        <div class="form-label-desc" id="delta-display" style="font-family: var(--font-mono); color: var(--color-chrom-x1);">
+          Δx1 = 1.000000, Δx2 = 1.000000
+        </div>
+      </div>
+
+      <div class="stage-panel">
+        <div class="stage-panel-header">
+          <span class="stage-panel-title">Population & Operators</span>
+        </div>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label for="pop-size" class="form-label">Pop Size (N)</label>
+            <input type="number" id="pop-size" class="input-number" value="4" min="2" max="20" step="2">
+            <div id="pop-size-error" class="input-error-msg">N must be even</div>
+          </div>
+          <div class="form-group">
+            <label for="max-gen" class="form-label">Max Gen</label>
+            <input type="number" id="max-gen" class="input-number" value="3" min="1" max="50">
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label for="pc-input" class="form-label">Crossover pc</label>
+            <input type="number" id="pc-input" class="input-number" value="0.8" min="0" max="1" step="0.05">
+          </div>
+          <div class="form-group">
+            <label for="pm-input" class="form-label">Mutation pm</label>
+            <input type="number" id="pm-input" class="input-number" value="0.05" min="0" max="1" step="0.01">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="selection-select" class="form-label">Selection Scheme</label>
+          <select id="selection-select" class="input-select">
+            <option value="roulette">Roulette Wheel (Fitness Proportionate)</option>
+            <option value="tournament">Binary Tournament</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="fitness-mode-select" class="form-label">Fitness Calculation</label>
+          <select id="fitness-mode-select" class="input-select">
+            <option value="min-inverse">min-inverse: F = 1 / (1 + f)</option>
+            <option value="min-cminus">min-cminus: F = C - f</option>
+            <option value="max">max: F = f</option>
+          </select>
+        </div>
+
+        <div id="cminus-wrap" class="form-group" style="display: none;">
+          <label for="cminus-input" class="form-label">Constant C</label>
+          <input type="number" id="cminus-input" class="input-number" value="450" step="any">
+        </div>
+
+        <div class="input-row" style="align-items: center; margin-top: 4px;">
+          <label class="form-label" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="elitism-toggle" style="accent-color: var(--color-chrom-x1);">
+            <span>Elitism (Preserve Best)</span>
+          </label>
+        </div>
+
+        <div class="form-group" style="margin-top: 4px;">
+          <label for="seed-input" class="form-label">RNG Seed (Mulberry32)</label>
+          <div class="input-row">
+            <input type="number" id="seed-input" class="input-number" value="42" step="1">
+            <button id="reseed-btn" class="btn btn-secondary" title="Randomize Seed" style="flex: 0 0 auto;">🎲</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 3. Center Stage -->
+    <main id="center-stage" role="main">
+      <!-- Step & Phase Indicator -->
+      <div class="stage-panel" style="padding: var(--space-3) var(--space-4);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="gen-badge" style="font-size: var(--font-size-md); font-weight: var(--font-weight-bold); font-family: var(--font-mono); color: var(--color-text-primary);">
+              Generation 1
+            </span>
+            <span id="step-name-badge" class="brand-tag">
+              DECODE & EVALUATION
+            </span>
+          </div>
+          <div id="step-stats" style="font-size: var(--font-size-xs); font-family: var(--font-mono); color: var(--color-text-secondary);">
+            Best f: -- | Avg f: -- | Worst f: --
+          </div>
+        </div>
+
+        <div class="phase-stepper" id="phase-stepper">
+          <div class="phase-step active" data-phase="DECODE_EVAL">1. Decode / Eval</div>
+          <div class="phase-step" data-phase="SELECT">2. Selection</div>
+          <div class="phase-step" data-phase="CROSSOVER">3. Crossover</div>
+          <div class="phase-step" data-phase="MUTATE">4. Mutation</div>
+          <div class="phase-step" data-phase="REPLACE">5. Replace</div>
+        </div>
+      </div>
+
+      <!-- Visualizations Grid (Phase 3: 2D Fitness Heatmap & Convergence Chart) -->
+      <div class="viz-grid">
+        <!-- Landscape Panel (2D Heatmap & 3D Fitness Landscape) -->
+        <section class="stage-panel" aria-label="Fitness Landscape Visualization">
+          <div class="stage-panel-header" style="flex-wrap: wrap; gap: 6px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="stage-panel-title" id="landscape-panel-title">Fitness Landscape</span>
+              <span id="landscape-fallback-notice" style="display: none; font-size: 10px; padding: 1px 6px; border: 1px solid var(--panel-border); border-radius: var(--radius-xs); color: var(--stone); background: var(--panel-fill);">Reduced 3D</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button id="landscape-view-mode-btn" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px;" title="Toggle 2D Heatmap / 3D Landscape">3D View</button>
+              <button id="landscape-metric-toggle" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px;" title="Toggle Height: Fitness F vs Objective f">Height: F</button>
+              <button id="landscape-reset-btn" class="btn btn-secondary" style="display: none; padding: 2px 8px; font-size: 11px;" title="Reset 3D View (Key R)">Reset</button>
+              <span id="heatmap-legend-delta" style="font-size: var(--font-size-2xs); font-family: var(--font-mono); color: var(--stone);"></span>
+            </div>
+          </div>
+          <div id="heatmap-wrapper" style="position: relative; width: 100%; display: flex; justify-content: center; overflow: hidden;">
+            <canvas id="heatmap-canvas" style="width: 100%; max-width: 440px; height: 300px; border-radius: var(--radius-sm);"></canvas>
+            <canvas id="landscape-3d-canvas" role="img" aria-label="3D Fitness Landscape" style="display: none; width: 100%; max-width: 440px; height: 300px; border-radius: var(--radius-sm); cursor: grab;"></canvas>
+            <div id="heatmap-tooltip" class="heatmap-tooltip" style="display: none;"></div>
+          </div>
+          <div class="heatmap-legend-wrap" id="heatmap-legend-container">
+            <span id="heatmap-legend-min" style="font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted);">min</span>
+            <canvas id="heatmap-legend-bar" width="160" height="10" style="border-radius: 2px; border: 1px solid var(--panel-border);"></canvas>
+            <span id="heatmap-legend-max" style="font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted);">max</span>
+          </div>
+        </section>
+
+        <!-- Convergence & Diversity Chart Panel -->
+        <section class="stage-panel" aria-label="Convergence and Diversity Chart">
+          <div class="stage-panel-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="stage-panel-title">Convergence & Diversity</span>
+              <span id="ribbon-fallback-notice" class="brand-tag" style="display: none; background: rgba(216, 212, 200, 0.15); color: var(--stone); border-color: rgba(216, 212, 200, 0.3);">Reduced 3D</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="chart-legend-chips">
+                <span style="color: #C6F135; font-size: 11px; font-weight: 600;">― Best</span>
+                <span style="color: #D8D4C8; font-size: 11px;">― Avg</span>
+                <span style="color: #D8D4C8; font-size: 11px; letter-spacing: 1px;">-- Worst</span>
+                <span style="color: rgba(216, 212, 200, 0.62); font-size: 11px; letter-spacing: 1px;">·· Div</span>
+              </div>
+              <button id="convergence-reset-btn" class="btn btn-secondary" style="display: none; font-size: 11px; padding: 2px 6px;" title="Reset 3D camera angle">Reset view</button>
+              <button id="convergence-view-mode-btn" class="btn btn-secondary" style="font-size: 11px; padding: 2px 8px;" aria-pressed="false" title="Toggle between 2D chart and 3D ribbon view">3D Ribbon</button>
+            </div>
+          </div>
+          <div id="convergence-wrapper" style="position: relative; width: 100%; display: flex; justify-content: center; overflow: hidden;">
+            <svg id="convergence-chart-svg" viewBox="0 0 540 240" style="width: 100%; max-width: 540px; height: 320px;"></svg>
+            <canvas id="convergence-ribbon-canvas" role="img" aria-label="3D Ribbon Convergence Chart" style="display: none; width: 100%; max-width: 540px; height: 320px; border-radius: var(--radius-sm); cursor: grab;"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <!-- Selection Operator Stage (Phase 4: Animated Roulette Wheel & Tournament Bracket) -->
+      <section class="stage-panel" id="selection-operator-panel" style="display: none;" aria-label="Selection Operator Visualization">
+        <div class="stage-panel-header">
+          <span class="stage-panel-title" id="selection-panel-title">Selection Mechanism</span>
+          <span style="font-size: var(--font-size-2xs); color: var(--color-text-muted);">
+            Animated selection & mating pool sampling
+          </span>
+        </div>
+        <!-- Roulette View -->
+        <div id="roulette-view" style="display: none; flex-direction: column; align-items: center; gap: var(--space-3); width: 100%;">
+          <canvas id="roulette-canvas" style="width: 320px; height: 320px;"></canvas>
+          <div id="roulette-readout" style="width: 100%; max-width: 440px;"></div>
+        </div>
+        <!-- Tournament View -->
+        <div id="tournament-bracket" style="display: none; width: 100%;"></div>
+      </section>
+
+      <!-- Population Table Panel -->
+      <section class="stage-panel" aria-label="Population Table">
+        <div class="stage-panel-header">
+          <span class="stage-panel-title">Active Population Table</span>
+          <span style="font-size: var(--font-size-2xs); color: var(--color-text-muted);">
+            Progressive column disclosure enabled
+          </span>
+        </div>
+
+        <!-- Verify Mode Summary Bar (Phase 5) -->
+        <div id="verify-summary-bar" class="verify-summary-bar" style="display: none;">
+          <div class="verify-badge">
+            <span class="verify-badge-icon">✓</span>
+            <span>Gen <span id="verify-gen-num">1</span>: <strong id="verify-gen-counts">0 / 0</strong> matched</span>
+          </div>
+          <div class="verify-badge">
+            <span>Global Match: <strong id="verify-global-counts">0 / 0</strong> (<span id="verify-global-pct">100%</span>)</span>
+          </div>
+          <div style="font-size: 10px; color: var(--color-text-muted); margin-left: auto;">
+            Tolerance: 0.5·10^(−dec) + 1e-9 | Hover cell for details
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="pop-table" id="population-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Chromosome (x1 | x2)</th>
+                <th class="col-disclose col-d">D1</th>
+                <th class="col-disclose col-d">D2</th>
+                <th class="col-disclose col-x">x1</th>
+                <th class="col-disclose col-x">x2</th>
+                <th class="col-disclose col-f">f(x1,x2)</th>
+                <th class="col-disclose col-fit">Fitness F</th>
+                <th class="col-disclose col-prob">p_i</th>
+                <th class="col-disclose col-prob">q_i</th>
+              </tr>
+            </thead>
+            <tbody id="population-table-body">
+              <!-- Populated by table.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Chromosome Strips Detail Panel -->
+      <section class="stage-panel" aria-label="Chromosome Bit Strips">
+        <div class="stage-panel-header">
+          <span class="stage-panel-title">Chromosome Bit Strips & Operator Inspection</span>
+          <span id="strip-hint" style="font-size: var(--font-size-2xs); color: var(--color-text-muted);">
+            Click a row above to inspect bits & weights
+          </span>
+        </div>
+        <div id="chromosome-strips" class="strips-container">
+          <!-- Populated by strips.js -->
+        </div>
+        <div id="chromosome-live-announcer" class="sr-only" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <!-- 4. Narration & Schema Rail (Right) -->
+    <aside id="narration-rail" role="complementary" aria-label="Step Narration and Schema X-Ray">
+      <!-- Error & Warning alerts container -->
+      <div id="alert-container"></div>
+
+      <!-- Narration Card -->
+      <div class="narration-card" id="narration-card">
+        <div class="narration-title" id="narration-title">
+          <span>Step Narration</span>
+        </div>
+        <div class="narration-body" id="narration-body">
+          Initializing algorithm state...
+        </div>
+        <div class="narration-math" id="narration-math" style="display: none;"></div>
+        <details class="narration-why" id="narration-why">
+          <summary>Why this step matters</summary>
+          <div id="narration-why-text" style="margin-top: 6px;"></div>
+        </details>
+      </div>
+
+      <!-- Schema X-Ray Panel (Phase 6) -->
+      <section class="stage-panel schema-xray-panel" id="schema-xray-panel" aria-label="Schema X-Ray and Holland Bound Analyzer">
+      </section>
+    </aside>
+
+    <!-- 5. Bottom Timeline Bar -->
+    <footer id="timeline-bar" role="toolbar" aria-label="Playback and Timeline Navigation">
+      <div class="timeline-controls-left">
+        <button id="reset-btn" class="btn btn-secondary btn-icon" title="Reset to Gen 1 (R)" aria-label="Reset">
+          ↺
+        </button>
+        <button id="step-back-btn" class="btn btn-secondary btn-icon" title="Step Back (←)" aria-label="Step Back">
+          ◀
+        </button>
+        <button id="play-pause-btn" class="btn btn-primary" title="Play / Pause (Space)" style="min-width: 80px;" aria-label="Play or Pause">
+          ▶ Play
+        </button>
+        <button id="step-fwd-btn" class="btn btn-secondary btn-icon" title="Step Forward (→)" aria-label="Step Forward">
+          ▶
+        </button>
+        <button id="next-gen-btn" class="btn btn-secondary btn-icon" title="Next Generation (⏭)" aria-label="Next Generation">
+          ⏭
+        </button>
+      </div>
+
+      <div class="timeline-scrubber-center">
+        <div class="scrubber-track" id="scrubber-track" role="slider" aria-label="Timeline Step Scrubber" tabindex="0">
+          <div class="scrubber-fill" id="scrubber-fill"></div>
+          <div class="scrubber-thumb" id="scrubber-thumb"></div>
+        </div>
+        <div class="scrubber-labels">
+          <span id="scrubber-gen-label">Gen 1 / Sub-step 1</span>
+          <span id="scrubber-step-count">Step 1 of 1</span>
+        </div>
+      </div>
+
+      <div class="timeline-controls-right">
+        <div class="speed-slider-wrap">
+          <label for="speed-slider">Speed:</label>
+          <input type="range" id="speed-slider" class="slider" min="100" max="1500" value="600" step="50" style="width: 80px;" aria-label="Playback Speed">
+          <span id="speed-val" style="font-family: var(--font-mono); width: 28px;">1x</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <label class="form-label" style="font-size: 10px; margin-bottom: 0; cursor: pointer;">
+            <input type="checkbox" id="granularity-toggle" style="accent-color: var(--color-chrom-x1);">
+            <span>Gen by Gen</span>
+          </label>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Application Entry Point (ES Module) -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

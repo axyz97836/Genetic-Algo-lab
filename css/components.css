@@ -1,0 +1,1284 @@
+/**
+ * css/components.css - Interactive Components & Visual Elements for GA Lab (Depth-Layered 3D Redesign).
+ * Strict 3-color palette: --graphite #101417, --stone #D8D4C8, --lime #C6F135.
+ * Flat styling: zero drop shadows, glows, or gradients. Depth from geometry and layering only.
+ * 8px panels, 6px controls. Monospace with tabular numbers for data.
+ */
+
+/* -------------------------------------------------------------
+ * 1. Global Focus & Accessibility Defaults
+ * ------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--lime) !important;
+  outline-offset: 2px !important;
+}
+
+/* -------------------------------------------------------------
+ * 2. Form Controls & Inputs (6px radius)
+ * ------------------------------------------------------------- */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.form-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-label-desc {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+}
+
+.input-text, .input-select, .input-number {
+  background-color: var(--color-surface-inset);
+  color: var(--stone);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  transition: border-color var(--duration-fast) ease;
+  width: 100%;
+}
+
+.input-select {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-right: 22px;
+}
+
+.input-select option {
+  background-color: var(--graphite);
+  color: var(--stone);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+}
+
+/* -------------------------------------------------------------
+ * 2a. Checkboxes (Graphite fill, Stone border, Lime check, Lime focus ring)
+ * ------------------------------------------------------------- */
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: var(--graphite);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  position: relative;
+  display: inline-grid;
+  place-content: center;
+  margin: 0;
+  vertical-align: middle;
+  flex-shrink: 0;
+  transition: border-color var(--duration-fast) ease, background-color var(--duration-fast) ease;
+}
+
+input[type="checkbox"]:hover {
+  border-color: var(--stone);
+}
+
+input[type="checkbox"]::before {
+  content: '';
+  width: 8px;
+  height: 5px;
+  border-left: 2px solid var(--lime);
+  border-bottom: 2px solid var(--lime);
+  transform: rotate(-45deg) scale(0);
+  transform-origin: center;
+  transition: transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin-top: -2px;
+}
+
+input[type="checkbox"]:checked::before {
+  transform: rotate(-45deg) scale(1);
+}
+
+input[type="checkbox"]:checked {
+  border-color: var(--lime);
+  background-color: color-mix(in srgb, var(--lime) 10%, var(--graphite));
+}
+
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--lime) !important;
+  outline-offset: 2px !important;
+}
+
+.input-text:hover, .input-select:hover, .input-number:hover {
+  border-color: color-mix(in srgb, var(--stone) 35%, transparent);
+}
+
+.input-text:focus-visible, .input-select:focus-visible, .input-number:focus-visible {
+  border-color: var(--lime);
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+}
+
+.input-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.input-row > * {
+  flex: 1;
+}
+
+.input-unit {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.input-error-msg {
+  font-size: var(--font-size-2xs);
+  color: var(--stone);
+  border-left: 2px solid var(--lime);
+  padding-left: 6px;
+  margin-top: 2px;
+  display: none;
+}
+
+.input-error-msg.visible {
+  display: block;
+}
+
+/* -------------------------------------------------------------
+ * 3. Buttons (6px radius, Lime Hover Sweep from Left)
+ * ------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border: 1px solid var(--panel-border);
+  background-color: var(--panel-fill);
+  color: var(--stone);
+  outline: none;
+  user-select: none;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: color 300ms ease, border-color 300ms ease;
+}
+
+/* Lime sweep pseudo-element */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--lime);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: -1;
+}
+
+.btn:hover:not(:disabled)::before {
+  transform: scaleX(1);
+}
+
+.btn:hover:not(:disabled) {
+  color: var(--graphite) !important;
+  border-color: var(--lime);
+}
+
+.btn:hover:not(:disabled) * {
+  color: var(--graphite) !important;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+}
+
+/* Primary Action Buttons */
+.btn-primary {
+  background-color: var(--lime);
+  color: var(--graphite);
+  border-color: var(--lime);
+  font-weight: var(--font-weight-semibold);
+}
+
+.btn-primary * {
+  color: var(--graphite);
+}
+
+.btn-primary::before {
+  background-color: color-mix(in srgb, var(--lime) 85%, var(--stone));
+}
+
+.btn-primary:hover:not(:disabled) {
+  color: var(--graphite) !important;
+  border-color: var(--lime);
+}
+
+.btn-secondary {
+  background-color: var(--panel-fill);
+  color: var(--stone);
+  border-color: var(--panel-border);
+}
+
+.btn-accent {
+  background-color: color-mix(in srgb, var(--stone) 10%, transparent);
+  color: var(--stone);
+  border-color: color-mix(in srgb, var(--stone) 25%, transparent);
+}
+
+.btn-danger {
+  background-color: var(--panel-fill);
+  color: var(--stone);
+  border-color: var(--panel-border);
+}
+
+.btn-icon {
+  padding: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background-color: var(--panel-fill);
+  color: var(--stone);
+  border: 1px solid var(--panel-border);
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* -------------------------------------------------------------
+ * 4. Stage Panels (8px radius, Corner Brackets, Depth Entrance)
+ * ------------------------------------------------------------- */
+
+@keyframes panel-entrance {
+  0% {
+    opacity: 0;
+    transform: translateZ(-20px) rotateX(8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateZ(var(--depth-z, 0px)) rotateX(calc(var(--tilt-rx) * var(--tilt-factor, 1))) rotateY(calc(var(--tilt-ry) * var(--tilt-factor, 1)));
+  }
+}
+
+.stage-panel {
+  position: relative;
+  background-color: var(--panel-fill);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: none;
+  transform: translateZ(var(--depth-z, 0px)) rotateX(calc(var(--tilt-rx) * var(--tilt-factor, 1))) rotateY(calc(var(--tilt-ry) * var(--tilt-factor, 1)));
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: border-color var(--duration-normal) ease;
+  animation: panel-entrance 300ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.stage-panel:hover {
+  border-color: var(--panel-border-hover);
+}
+
+/* Corner brackets: 1px stone @ 60% alpha, 8px length on both axes */
+.stage-panel::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+  background:
+    /* top-left horizontal & vertical */
+    linear-gradient(to right, color-mix(in srgb, var(--stone) 60%, transparent) 8px, transparent 8px) top left / 8px 1px no-repeat,
+    linear-gradient(to bottom, color-mix(in srgb, var(--stone) 60%, transparent) 8px, transparent 8px) top left / 1px 8px no-repeat,
+    /* top-right horizontal & vertical */
+    linear-gradient(to left, color-mix(in srgb, var(--stone) 60%, transparent) 8px, transparent 8px) top right / 8px 1px no-repeat,
+    linear-gradient(to bottom, color-mix(in srgb, var(--stone) 60%, transparent) 8px, transparent 8px) top right / 1px 8px no-repeat,
+    /* bottom-left horizontal & vertical */
+    linear-gradient(to right, color-mix(in srgb, var(--stone) 60%, transparent) 8px, transparent 8px) bottom left / 8px 1px no-repeat,
+    linear-gradient(to top, color-mix(in srgb, var(--stone) 60%, transparent) 8px, transparent 8px) bottom left / 1px 8px no-repeat,
+    /* bottom-right horizontal & vertical */
+    linear-gradient(to left, color-mix(in srgb, var(--stone) 60%, transparent) 8px, transparent 8px) bottom right / 8px 1px no-repeat,
+    linear-gradient(to top, color-mix(in srgb, var(--stone) 60%, transparent) 8px, transparent 8px) bottom right / 1px 8px no-repeat;
+}
+
+/* Staggered entrance delays */
+#control-rail .stage-panel:nth-child(1) { animation-delay: 0ms; }
+#control-rail .stage-panel:nth-child(2) { animation-delay: 60ms; }
+#control-rail .stage-panel:nth-child(3) { animation-delay: 120ms; }
+#center-stage .stage-panel:nth-child(1) { animation-delay: 60ms; }
+#center-stage .stage-panel:nth-child(2) { animation-delay: 120ms; }
+#center-stage .stage-panel:nth-child(3) { animation-delay: 180ms; }
+#center-stage .stage-panel:nth-child(4) { animation-delay: 240ms; }
+#center-stage .stage-panel:nth-child(5) { animation-delay: 300ms; }
+#narration-rail .stage-panel:nth-child(1) { animation-delay: 120ms; }
+#narration-rail .stage-panel:nth-child(2) { animation-delay: 180ms; }
+
+/* -------------------------------------------------------------
+ * 5. Stepper & Phase Badges
+ * ------------------------------------------------------------- */
+
+.phase-stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-surface-inset);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--panel-border);
+  width: 100%;
+}
+
+.phase-step {
+  flex: 1;
+  text-align: center;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-medium);
+  padding: 4px 6px;
+  border-radius: var(--radius-xs);
+  color: var(--color-text-muted);
+  transition: all var(--duration-fast) ease;
+}
+
+.phase-step.active {
+  background: var(--lime);
+  color: var(--graphite);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid var(--lime);
+}
+
+.phase-step.completed {
+  color: var(--stone);
+}
+
+/* -------------------------------------------------------------
+ * 6. Population Table
+ * ------------------------------------------------------------- */
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--panel-border);
+  background: var(--color-surface-inset);
+}
+
+.pop-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.pop-table th {
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--panel-border);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.pop-table th:first-child, .pop-table td:first-child {
+  text-align: center;
+  width: 36px;
+}
+
+.pop-table th:nth-child(2), .pop-table td:nth-child(2) {
+  text-align: left;
+}
+
+.pop-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--stone);
+  white-space: nowrap;
+}
+
+.pop-table tr:hover td {
+  background-color: color-mix(in srgb, var(--stone) 4%, transparent);
+}
+
+.pop-table tr.selected td {
+  background-color: color-mix(in srgb, var(--stone) 10%, transparent);
+}
+
+.pop-table tr.best-row td {
+  background-color: color-mix(in srgb, var(--lime) 12%, transparent);
+  border-left: 2px solid var(--lime);
+}
+
+.col-disclose {
+  transition: opacity var(--duration-normal) ease;
+}
+
+.col-disclose.newly-active {
+  background-color: color-mix(in srgb, var(--lime) 8%, transparent);
+}
+
+.cell-chrom {
+  display: inline-flex;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.chrom-seg-x1 {
+  color: var(--stone);
+  background: color-mix(in srgb, var(--stone) 10%, transparent);
+  padding: 1px 4px;
+  border-radius: var(--radius-xs);
+}
+
+.chrom-seg-x2 {
+  color: color-mix(in srgb, var(--stone) 75%, transparent);
+  background: color-mix(in srgb, var(--stone) 5%, transparent);
+  padding: 1px 4px;
+  border-radius: var(--radius-xs);
+}
+
+/* -------------------------------------------------------------
+ * 7. Chromosome Bit Strips Detail View
+ * ------------------------------------------------------------- */
+
+.strips-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.strip-item {
+  background: var(--color-surface-inset);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.strip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.strip-bits-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  position: relative;
+  padding: 4px 0;
+}
+
+.bit-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 48px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  position: relative;
+  transition: all var(--duration-fast) ease;
+}
+
+.bit-cell.seg-x1 {
+  border-top: 2px solid var(--stone);
+}
+
+.bit-cell.seg-x2 {
+  border-top: 2px solid color-mix(in srgb, var(--stone) 60%, transparent);
+}
+
+.bit-pos {
+  font-size: 9px;
+  color: var(--color-text-muted);
+}
+
+.bit-val {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--stone);
+}
+
+.bit-weight {
+  font-size: 8px;
+  color: var(--color-text-muted);
+}
+
+.bit-cell.flipped {
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+.bit-cell.flipped .bit-val,
+.bit-cell.flipped .bit-pos,
+.bit-cell.flipped .bit-weight {
+  color: var(--graphite);
+}
+
+.bit-cell.tail-swapped {
+  background: color-mix(in srgb, var(--stone) 15%, transparent);
+  border-color: var(--stone);
+}
+
+.cut-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--lime);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.cut-badge {
+  position: absolute;
+  top: -18px;
+  transform: translateX(-50%);
+  background-color: var(--lime);
+  color: var(--graphite);
+  font-size: 9px;
+  font-weight: bold;
+  padding: 1px 4px;
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+}
+
+.delta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-2xs);
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--stone) 12%, transparent);
+  color: var(--stone);
+  border: 1px solid var(--panel-border);
+}
+
+/* -------------------------------------------------------------
+ * 8. Narration Card
+ * ------------------------------------------------------------- */
+
+.narration-card {
+  background: var(--color-surface-inset);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.narration-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--stone);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.narration-body {
+  font-size: var(--font-size-xs);
+  color: var(--stone);
+  line-height: 1.6;
+}
+
+.narration-math {
+  background: var(--color-surface-raised);
+  border-left: 2px solid var(--lime);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xs);
+  color: var(--stone);
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+.narration-why {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-secondary);
+  border-top: 1px dashed var(--panel-border);
+  padding-top: var(--space-2);
+}
+
+.narration-why summary {
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  user-select: none;
+}
+
+.narration-why summary:hover {
+  color: var(--stone);
+}
+
+.narration-why[open] summary {
+  margin-bottom: var(--space-1);
+  color: var(--stone);
+}
+
+/* -------------------------------------------------------------
+ * 9. Error / Alert Cards
+ * ------------------------------------------------------------- */
+
+.alert-card {
+  background: var(--color-surface-inset);
+  border: 1px solid var(--panel-border);
+  border-left: 3px solid var(--lime);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.alert-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--stone);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.alert-msg {
+  font-size: var(--font-size-2xs);
+  color: var(--stone);
+  line-height: 1.5;
+}
+
+.alert-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+/* -------------------------------------------------------------
+ * 10. Playback & Timeline Controls
+ * ------------------------------------------------------------- */
+
+.timeline-controls-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timeline-scrubber-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scrubber-track {
+  width: 100%;
+  height: 6px;
+  background: var(--color-surface-inset);
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+}
+
+.scrubber-fill {
+  height: 100%;
+  background: var(--lime);
+  border-radius: 3px;
+  width: 0%;
+  transition: width var(--duration-fast) linear;
+}
+
+.scrubber-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: var(--lime);
+  border: 2px solid var(--graphite);
+  border-radius: 50%;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.scrubber-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.timeline-controls-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.speed-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+}
+
+.slider {
+  accent-color: var(--lime);
+  cursor: pointer;
+  height: 4px;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .viz-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.heatmap-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--color-surface-overlay);
+  border: 1px solid var(--panel-border);
+  box-shadow: none;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--stone);
+  line-height: 1.4;
+  z-index: 100;
+}
+
+.heatmap-legend-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+}
+
+.chart-legend-chips {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* -------------------------------------------------------------
+ * 11. Tournament & Roulette Operator Views
+ * ------------------------------------------------------------- */
+
+.tournament-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.tourn-card {
+  background: var(--color-surface-inset);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tourn-card-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 4px;
+}
+
+.tourn-contenders {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tourn-contender {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-xs);
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xs);
+  font-variant-numeric: tabular-nums;
+  transition: all var(--duration-fast) ease;
+}
+
+.tourn-contender.winner {
+  border-color: var(--lime);
+  background: color-mix(in srgb, var(--lime) 10%, transparent);
+}
+
+.tourn-contender.loser {
+  opacity: 0.5;
+}
+
+.tourn-badge-win {
+  background: var(--lime);
+  color: var(--graphite);
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: var(--radius-xs);
+}
+
+.tourn-vs {
+  text-align: center;
+  font-size: 9px;
+  color: var(--color-text-muted);
+  font-weight: bold;
+}
+
+.tourn-footer {
+  border-top: 1px dashed var(--panel-border);
+  padding-top: 4px;
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-secondary);
+  text-align: right;
+}
+
+/* -------------------------------------------------------------
+ * 12. Verify Mode UI
+ * ------------------------------------------------------------- */
+
+.verify-summary-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  margin-bottom: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.verify-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--lime) 15%, transparent);
+  color: var(--lime);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.verify-badge-icon {
+  font-weight: bold;
+}
+
+.verify-cell-mark {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 0 3px;
+  border-radius: 2px;
+  cursor: help;
+}
+
+.verify-cell-mark.pass {
+  color: var(--graphite);
+  background: var(--lime);
+}
+
+.verify-cell-mark.fail {
+  color: var(--stone);
+  background: color-mix(in srgb, var(--stone) 20%, transparent);
+  border: 1px solid var(--stone);
+}
+
+.verify-cell-mark.neutral {
+  color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------
+ * 13. Schema X-Ray Component UI
+ * ------------------------------------------------------------- */
+
+.schema-xray-panel {
+  border: 1px solid var(--panel-border);
+  background: var(--color-surface-inset);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+  transition: border-color var(--duration-fast) ease;
+}
+
+.schema-xray-panel:hover {
+  border-color: var(--panel-border-hover);
+}
+
+.schema-bit-grid {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px 2px;
+}
+
+.schema-bit-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 38px;
+  padding: 2px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--panel-border);
+  background: var(--color-surface-raised);
+  color: var(--stone);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  user-select: none;
+  transition: all 120ms ease;
+}
+
+.schema-bit-btn:hover {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+
+.schema-bit-btn:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 1px;
+}
+
+.schema-bit-btn.seg-x1 {
+  border-top: 2px solid var(--stone);
+}
+
+.schema-bit-btn.seg-x2 {
+  border-top: 2px solid color-mix(in srgb, var(--stone) 60%, transparent);
+}
+
+.bit-btn-pos {
+  font-size: 8px;
+  color: var(--color-text-muted);
+}
+
+.bit-btn-val {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--stone);
+}
+
+.schema-metric-box {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-xs);
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.schema-metric-label {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.schema-metric-val {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: bold;
+  color: var(--stone);
+  margin-top: 2px;
+}
+
+.pop-table tr.schema-match-row {
+  background: color-mix(in srgb, var(--stone) 8%, transparent);
+  border-left: 2px solid var(--lime);
+}
+
+.bit-cell.schema-bit-match {
+  border-color: var(--lime);
+  background: color-mix(in srgb, var(--lime) 10%, transparent);
+}
+
+/* -------------------------------------------------------------
+ * 12. CSS 3D Chromosomes & Animated Operators (Phase 3)
+ * ------------------------------------------------------------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.chrom-stage-3d {
+  perspective: 800px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  position: relative;
+  padding: 12px 6px;
+  min-height: 120px;
+}
+
+.chrom-strand-3d {
+  display: inline-flex;
+  align-items: center;
+  transform-style: preserve-3d;
+  position: relative;
+  margin: 6px 0;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chrom-strand-p1 {
+  transform: translate3d(0, 0, 0px);
+}
+
+.chrom-strand-p2 {
+  transform: translate3d(0, 0, 24px);
+}
+
+.chrom-segment-gap {
+  width: 14px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+}
+
+.chrom-segment-gap::after {
+  content: '│';
+  color: rgba(216, 212, 200, 0.35);
+  font-size: 14px;
+  font-family: var(--font-mono);
+}
+
+.bit-block-3d {
+  width: 30px;
+  height: 48px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--graphite);
+  border: 1px solid var(--panel-border);
+  border-top: 2px solid var(--stone);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  position: relative;
+  margin: 0 2px;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.bit-block-3d.seg-x2 {
+  border-top-color: color-mix(in srgb, var(--stone) 60%, transparent);
+}
+
+.bit-block-3d .bit-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--stone);
+}
+
+.bit-block-3d .bit-pos {
+  font-size: 9px;
+  color: var(--color-text-muted);
+}
+
+.bit-block-3d .bit-weight {
+  font-size: 8px;
+  color: var(--color-text-muted);
+}
+
+/* Crossover Cut Line */
+.crossover-cut-line-3d {
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  width: 2px;
+  background: var(--lime);
+  z-index: 50;
+  pointer-events: none;
+  transform: translateZ(32px);
+}
+
+.crossover-cut-line-3d.sweeping {
+  animation: cut-line-sweep 400ms cubic-bezier(0.2, 0, 0.2, 1) forwards;
+}
+
+@keyframes cut-line-sweep {
+  from { left: 0px; }
+  to { left: var(--target-cut-x, 120px); }
+}
+
+/* Crossover Tail Swap Arc with 16px Z Lift */
+.tail-swapping-p1 {
+  animation: tail-arc-p1-to-p2 750ms cubic-bezier(0.4, 0, 0.2, 1) 400ms forwards;
+}
+
+@keyframes tail-arc-p1-to-p2 {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, 30px, 16px); }
+  100% { transform: translate3d(0, 60px, 24px); }
+}
+
+.tail-swapping-p2 {
+  animation: tail-arc-p2-to-p1 750ms cubic-bezier(0.4, 0, 0.2, 1) 400ms forwards;
+}
+
+@keyframes tail-arc-p2-to-p1 {
+  0% { transform: translate3d(0, 0, 24px); }
+  50% { transform: translate3d(0, -30px, 40px); }
+  100% { transform: translate3d(0, -60px, 0); }
+}
+
+/* Offspring Dashed Card Settling to Solid */
+.chrom-child-card {
+  border: 1px dashed var(--stone) !important;
+  animation: settle-solid 400ms ease 1150ms forwards;
+}
+
+@keyframes settle-solid {
+  to { border-style: solid !important; }
+}
+
+/* Mutation 3D Flash Animation */
+.bit-block-3d.mutation-flash {
+  animation: mutation-pop-flash 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 40;
+}
+
+@keyframes mutation-pop-flash {
+  0% {
+    transform: scale3d(1.6, 1.6, 1.6) translateZ(24px);
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--graphite);
+  }
+  50% {
+    transform: scale3d(1.3, 1.3, 1.3) translateZ(12px);
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--graphite);
+  }
+  100% {
+    transform: scale3d(1.0, 1.0, 1.0) translateZ(0);
+    background: var(--graphite);
+    border-color: var(--lime);
+    color: var(--lime);
+  }
+}
+
+.bit-block-3d.mutation-flash .bit-val {
+  animation: mutation-val-color 900ms ease forwards;
+}
+
+@keyframes mutation-val-color {
+  0%, 49% { color: var(--graphite); }
+  50%, 100% { color: var(--lime); }
+}
+
+/* Reduced Motion specific overrides */
+.bit-block-3d.reduced-changed {
+  border: 2px solid var(--lime) !important;
+}
+
+/* Reduced Motion Compliance */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
+  .bit-block-3d.reduced-changed {
+    border: 2px solid var(--lime) !important;
+  }
+}
